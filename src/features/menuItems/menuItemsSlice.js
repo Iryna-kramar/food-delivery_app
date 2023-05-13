@@ -1,38 +1,37 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+
+export const getMenuItems = createAsyncThunk('menuItems/getMenuItems', async () => {
+    const response = await axios.get("/menuItems.json")
+    return response.data
+})
 
 const initialState = {
-  isLoading: false,
-  isFailed: false,
   menuItems: [],
-};
+  status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null
+}
 
-export const getCategories = createAsyncThunk()
-
-export const menuItemsSlice = createSlice({
-  name: "menuItems",
-  initialState,
-  reducers: {
-    loadCategoriesRequest: (state) => {
-      state.isLoading = true;
+const menuItemsSlice = createSlice({
+    name: 'menuItems',
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+      builder
+        .addCase(getMenuItems.pending, (state) => {
+          state.status = 'loading';
+        })
+        .addCase(getMenuItems.fulfilled, (state, action) => {
+          state.status = 'succeeded';
+          state.menuItems = action.payload;
+        })
+        .addCase(getMenuItems.rejected, (state, action) => {
+          state.status = 'failed';
+          state.error = action.error.message;
+        });
     },
-    loadCategoriesSuccess: (state, action) => {
-      state.data = action.menuItems;
-      state.isLoading = false;
-      state.isFailed = false;
-    },
-    loadCategoriesFailure: (state) => {
-      state.isLoading = false;
-      state.isFailed = true;
-    },
-  },
-});
+  });
+  
+  export default menuItemsSlice.reducer;
 
-const { actions, reducer } = menuItemsSlice;
-
-export default reducer;
-
-export const {
-  loadCategoriesRequest,
-  loadCategoriesSuccess,
-  loadCategoriesFailure,
-} = actions;
