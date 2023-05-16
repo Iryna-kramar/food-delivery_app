@@ -9,13 +9,11 @@ import Products from "./features/products/Products";
 function App() {
   return (
     <div>
-      <Header />
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/menu" element={<MenuItems />} />
         <Route path="/products" element={<Products />} />
       </Routes>
-      <Footer />
     </div>
   );
 }

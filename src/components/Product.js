@@ -13,6 +13,7 @@ function Product({
   quantity,
   image,
   rating,
+  toggleModal,
   isVeg,
   category,
   changeProductCount,
@@ -31,14 +32,28 @@ function Product({
     }
   };
 
-  const showIcon = () => {
-    const isPizzaCategory = category === "pizza";
+  const addItem = () => {
+    if (category === 'pizza') {
+      toggleModal(id, title, image, price);
+    }
+  };
+
+  const showIcons = () => {
+    const isPizzaCategory = category === 'pizza';
     if (isPizzaCategory) {
       if (isVeg) {
         return (
           <img
             src="/images/veg_icon.png"
             alt="Veg Icon"
+            className="small-icons"
+          />
+        );
+      } else {
+        return (
+          <img
+            src="/images/non_veg_icon.png"
+            alt="Non Veg Icon"
             className="small-icons"
           />
         );
@@ -59,7 +74,7 @@ function Product({
             <h5 className="product-title">
               <span>
                 {title}
-                {showIcon()}
+                {showIcons()}
                 {isOutOfStock && <span className="oos">Out of stock</span>}
               </span>
             </h5>
@@ -102,6 +117,7 @@ function Product({
                 className={`${
                   isOutOfStock ? "btn-disabled add-btn" : "add-btn"
                 }`}
+                onClick={!isOutOfStock ? addItem : null}
               >
                 Add
               </Button>
@@ -110,7 +126,7 @@ function Product({
           <div className="rating">
             <Rating
               initialRating={rating}
-              emptySymbol={<FaStar size={20} color="#ccc" />}
+              emptySymbol={<FaStar size={20} color="#dee2e6" />}
               fullSymbol={<FaStar size={20} color="#ffc107" />}
               readonly
             />
@@ -121,6 +137,7 @@ function Product({
               {displayDescription(description)}
             </p>
           )}
+          <div className="product-price">{getFormattedPrice(price, 0)}</div>
         </div>
       </div>
     </React.Fragment>
