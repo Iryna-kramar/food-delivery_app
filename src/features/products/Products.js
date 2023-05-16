@@ -13,7 +13,9 @@ const Products = () => {
   const products = useSelector((state) => state.products.data);
   const loading = useSelector((state) => state.products.loading);
   const error = useSelector((state) => state.products.error);
-  const toppings = useSelector((state) => state.toppings.toppings);
+  const toppings = useSelector((state) => state.toppings.data);
+
+  console.log (toppings, 'toppings')
 
   const [category, setCategory] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(false);

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { getFormattedPrice, getFormattedTopping } from '../utils/functions';
-import { useDispatch, useSelector } from "react-redux";
 
 const ToppingsModal = ({
   showModal,
@@ -17,7 +16,6 @@ const ToppingsModal = ({
   addProduct
 }) => {
 
-  console.log (toppings, 'toppings')
   return (
     <Modal show={showModal} onHide={toggleModal} className="toppings-modal">
       <Modal.Header closeButton>

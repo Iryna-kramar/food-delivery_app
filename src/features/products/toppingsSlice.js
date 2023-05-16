@@ -26,7 +26,7 @@ const toppingsSlice = createSlice({
       })
       .addCase(getToppings.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.toppings = action.payload;
+        state.data = action.payload;
       })
       .addCase(getToppings.rejected, (state, action) => {
         state.status = "failed";
