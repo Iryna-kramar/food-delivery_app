@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllProducts } from "./productsSlice";
 import { getToppings } from "./toppingsSlice";
@@ -7,6 +7,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getQueryStringValue } from "../../utils/functions";
 import ToppingsModal from "../../components/ToppingModal";
 import Layout from "../../components/Layout";
+import {addToCart} from "../cart/cartSlice"
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -14,8 +15,6 @@ const Products = () => {
   const loading = useSelector((state) => state.products.loading);
   const error = useSelector((state) => state.products.error);
   const toppings = useSelector((state) => state.toppings.data);
-
-  console.log (toppings, 'toppings')
 
   const [category, setCategory] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(false);
@@ -27,10 +26,14 @@ const Products = () => {
   const [totalOrderPrice, setTotalOrderPrice] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
+  const [cartProducts, setCartProducts] = useState([]);
+  
 
   const navigate = useNavigate();
   const location = useLocation();
   const { search = "" } = location;
+
+  const emptyArrayRef = useRef([]);
 
   useEffect(() => {
     if (search) {
@@ -53,6 +56,25 @@ const Products = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    if (!search) {
+      navigate("/");
+    }
+  }, [search, navigate]);
+
+  useEffect(() => {
+    emptyArrayRef.current = new Array(toppings.length).fill(false);
+    setCheckedState(emptyArrayRef.current);
+  }, [toppings.length]);
+
+  useEffect(() => {
+    if (selectedProduct.price >= 0 && selectedToppingsCount > 0) {
+      setTotalOrderPrice(selectedProduct.price + selectedProduct.productPrice);
+    } else if (selectedProduct.price >= 0) {
+      setTotalOrderPrice(selectedProduct.price);
+    }
+  }, [selectedProduct.price, selectedToppingsCount]);
+
   const toggleModal = (id, title, image, price) => {
     if (id) {
       setSelectedProduct({
@@ -69,9 +91,67 @@ const Products = () => {
 
   const addProduct = () => {
     const { id, title, image } = selectedProduct;
-    console.log({ selectedProduct });
+  
+    let isAlreadyAdded = false;
+    const isPizzaCategory = category === 'pizza';
+    let cart = cartProducts.map((cartProduct) => {
+      if (cartProduct.id === id) {
+        isAlreadyAdded = true;
+        cartProduct.quantity = productQuantity;
+        cartProduct.price = totalOrderPrice;
+        cartProducts.category = category;
+        if (isPizzaCategory) {
+          cartProduct.toppings = checkedState
+            .map((isChecked, index) =>
+              isChecked ? toppings[index].name : null
+            )
+            .filter(Boolean);
+        }
+        return cartProduct;
+      } else {
+        return cartProduct;
+      }
+    });
+  
+    if (!isAlreadyAdded) {
+      cart = [
+        ...cart,
+        {
+          id,
+          title,
+          image,
+          toppings: isPizzaCategory
+            ? checkedState
+                .map((isChecked, index) =>
+                  isChecked ? toppings[index].name : null
+                )
+                .filter(Boolean)
+            : null,
+          quantity: productQuantity,
+          price: totalOrderPrice,
+          category
+        }
+      ];
+  
+      if (isPizzaCategory) {
+        // remove toppings from non-pizza category products
+        cart = cart.map((item) => {
+          if (
+            (item.category === 'pizza' && item.toppings.length > 0) ||
+            item.category === 'pizza'
+          ) {
+            return item;
+          } else {
+            delete item.toppings;
+            return item;
+          }
+        });
+      }
+    }
+  
+    setCartProducts(cart);
     setShowModal(!showModal);
-    // toast.success('Product added successfully.');
+    dispatch(addToCart(cart));
   };
 
   const handleToppingsSelection = (position) => {
@@ -115,12 +195,6 @@ const Products = () => {
       : products;
     setFilteredResults(result);
   };
-
-  useEffect(() => {
-    if (!search) {
-      navigate("/");
-    }
-  }, [search, navigate]);
 
   if (loading) {
     return (

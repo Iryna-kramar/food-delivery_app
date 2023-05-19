@@ -126,7 +126,7 @@ function Product({
           <div className="rating">
             <Rating
               initialRating={rating}
-              emptySymbol={<FaStar size={20} color="#dee2e6" />}
+              emptySymbol={<FaStar size={20} color="#e9ecef" />}
               fullSymbol={<FaStar size={20} color="#ffc107" />}
               readonly
             />
