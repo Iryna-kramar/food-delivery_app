@@ -7,14 +7,17 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getQueryStringValue } from "../../utils/functions";
 import ToppingsModal from "../../components/ToppingModal";
 import Layout from "../../components/Layout";
-import {addToCart} from "../cart/cartSlice"
+import { addToCart, changeProductCount } from "../cart/cartSlice";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
-const Products = () => {
+const Products = ({items, setItems}) => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products.data);
   const loading = useSelector((state) => state.products.loading);
   const error = useSelector((state) => state.products.error);
   const toppings = useSelector((state) => state.toppings.data);
+  const cart = useSelector((state) => state.cart.data);
 
   const [category, setCategory] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(false);
@@ -27,7 +30,6 @@ const Products = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [cartProducts, setCartProducts] = useState([]);
-  
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,11 +51,22 @@ const Products = () => {
   }, [products]);
 
   useEffect(() => {
+    setCartProducts(cart);
+  }, [cart]);
+
+  useEffect(() => {
     dispatch(getToppings());
   }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (cartProducts.length === 0 || items.length !== cartProducts.length) {
+      setCartProducts(items);
+      dispatch(addToCart(items));
+    }
   }, []);
 
   useEffect(() => {
@@ -74,6 +87,12 @@ const Products = () => {
       setTotalOrderPrice(selectedProduct.price);
     }
   }, [selectedProduct.price, selectedToppingsCount]);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      setItems(cart);
+    }
+  }, [setItems, cart]);
 
   const toggleModal = (id, title, image, price) => {
     if (id) {
@@ -99,9 +118,9 @@ const Products = () => {
 
   const addProduct = () => {
     const { id, title, image } = selectedProduct;
-  
+
     let isAlreadyAdded = false;
-    const isPizzaCategory = category === 'pizza';
+    const isPizzaCategory = category === "pizza";
     let cart = cartProducts.map((cartProduct) => {
       if (cartProduct.id === id) {
         isAlreadyAdded = true;
@@ -120,7 +139,7 @@ const Products = () => {
         return cartProduct;
       }
     });
-  
+
     if (!isAlreadyAdded) {
       cart = [
         ...cart,
@@ -137,16 +156,16 @@ const Products = () => {
             : null,
           quantity: productQuantity,
           price: totalOrderPrice,
-          category
-        }
+          category,
+        },
       ];
-  
+
       if (isPizzaCategory) {
         // remove toppings from non-pizza category products
         cart = cart.map((item) => {
           if (
-            (item.category === 'pizza' && item.toppings.length > 0) ||
-            item.category === 'pizza'
+            (item.category === "pizza" && item.toppings.length > 0) ||
+            item.category === "pizza"
           ) {
             return item;
           } else {
@@ -156,11 +175,29 @@ const Products = () => {
         });
       }
     }
-  
+
     setCartProducts(cart);
     resetState();
     setShowModal(!showModal);
     dispatch(addToCart(cart));
+    toast.success("Product added successfully.");
+  };
+
+  const addNormalProduct = (id, title, image, price) => {
+    const cart = [
+      ...cartProducts,
+      {
+        id,
+        title,
+        image,
+        quantity: productQuantity,
+        price,
+        category,
+      },
+    ];
+    setCartProducts(cart);
+    dispatch(addToCart(cart));
+    toast.success("Product added successfully.");
   };
 
   const handleToppingsSelection = (position) => {
@@ -204,6 +241,11 @@ const Products = () => {
       : products;
     setFilteredResults(result);
   };
+
+  const handleChangeProductCount = (id, operation) => {
+    dispatch(changeProductCount(id, operation === 'increment'));
+  };
+
 
   if (loading) {
     return (
@@ -265,6 +307,9 @@ const Products = () => {
                 isVeg={is_veg}
                 category={category}
                 toggleModal={toggleModal}
+                addNormalProduct={addNormalProduct}
+                cart={cart}
+                handleChangeProductCount={handleChangeProductCount}
               />
             )
           )}

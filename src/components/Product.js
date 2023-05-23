@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import Rating from "react-rating";
 import { MAX_DESCRIPTION_CHARS } from "../utils/constants";
@@ -16,9 +16,16 @@ function Product({
   toggleModal,
   isVeg,
   category,
-  changeProductCount,
+  handleChangeProductCount,
+  addNormalProduct,
+  cart,
 }) {
   const [productQuantity, setProductQuantity] = useState(1);
+  const isProductAlreadyAdded = cart.some((item) => item.id === id);
+
+  useEffect(() => {
+    setProductQuantity(cart.find((item) => item.id === id)?.quantity);
+  }, [cart, id]);
 
   const displayDescription = (description) => {
     if (description.length > MAX_DESCRIPTION_CHARS) {
@@ -33,13 +40,15 @@ function Product({
   };
 
   const addItem = () => {
-    if (category === 'pizza') {
+    if (category === "pizza") {
       toggleModal(id, title, image, price);
+    } else {
+      addNormalProduct(id, title, image, price);
     }
   };
 
   const showIcons = () => {
-    const isPizzaCategory = category === 'pizza';
+    const isPizzaCategory = category === "pizza";
     if (isPizzaCategory) {
       if (isVeg) {
         return (
@@ -78,20 +87,54 @@ function Product({
                 {isOutOfStock && <span className="oos">Out of stock</span>}
               </span>
             </h5>
-            {false ? (
+            {isProductAlreadyAdded ? (
+              //   <div
+              //     disabled={isOutOfStock}
+              //     className={`${
+              //       isOutOfStock
+              //         ? "btn-disabled quantity qty-btn"
+              //         : "quantity qty-btn"
+              //     }`}
+              //   >
+              //     <span
+              //       className="minus-sign"
+              //       onClick={
+              //         !isOutOfStock
+              //           ? () => handleChangeProductCount(id, "decrement")
+              //           : null
+              //       }
+              //     >
+              //       &#8722;
+              //     </span>
+              //     <span className="product-qty">{productQuantity}</span>
+              //     <span
+              //       className="plus-sign"
+              //       onClick={
+              //         !isOutOfStock
+              //           ? () => handleChangeProductCount(id, "increment")
+              //           : null
+              //       }
+              //     >
+              //       &#43;
+              //     </span>
+              //   </div>
               <div
-                disabled={isOutOfStock}
                 className={`${
                   isOutOfStock
                     ? "btn-disabled quantity qty-btn"
                     : "quantity qty-btn"
                 }`}
+                style={{ pointerEvents: isOutOfStock ? "none" : "auto" }}
               >
                 <span
                   className="minus-sign"
                   onClick={
                     !isOutOfStock
-                      ? () => changeProductCount(id, "decrement")
+                      ? () =>
+                          handleChangeProductCount({
+                            id,
+                            operation: "decrement",
+                          })
                       : null
                   }
                 >
@@ -102,7 +145,11 @@ function Product({
                   className="plus-sign"
                   onClick={
                     !isOutOfStock
-                      ? () => changeProductCount(id, "increment")
+                      ? () =>
+                          handleChangeProductCount({
+                            id,
+                            operation: "increment",
+                          })
                       : null
                   }
                 >

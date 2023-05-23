@@ -32,9 +32,9 @@ export const setCart = createAsyncThunk("cart/setCart", async (products) => {
 
 export const changeProductCount = createAsyncThunk(
   "cart/changeProductCount",
-  async ({ id, isIncrement }) => {
+  async ({ id, operation }) => {
     try {
-      return { id, isIncrement };
+      return { id, operation };
     } catch (error) {
       console.log("error while changing product count");
       throw error;
@@ -98,10 +98,10 @@ const cartSlice = createSlice({
       .addCase(changeProductCount.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isFailed = false;
-        const { id, isIncrement } = action.payload;
+        const { id, operation } = action.payload;
         state.data = state.data.map((item) => {
           if (item.id === id) {
-            if (isIncrement) {
+            if (operation === "increment") {
               return {
                 ...item,
                 quantity: item.quantity + 1,
