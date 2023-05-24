@@ -88,36 +88,6 @@ function Product({
               </span>
             </h5>
             {isProductAlreadyAdded ? (
-              //   <div
-              //     disabled={isOutOfStock}
-              //     className={`${
-              //       isOutOfStock
-              //         ? "btn-disabled quantity qty-btn"
-              //         : "quantity qty-btn"
-              //     }`}
-              //   >
-              //     <span
-              //       className="minus-sign"
-              //       onClick={
-              //         !isOutOfStock
-              //           ? () => handleChangeProductCount(id, "decrement")
-              //           : null
-              //       }
-              //     >
-              //       &#8722;
-              //     </span>
-              //     <span className="product-qty">{productQuantity}</span>
-              //     <span
-              //       className="plus-sign"
-              //       onClick={
-              //         !isOutOfStock
-              //           ? () => handleChangeProductCount(id, "increment")
-              //           : null
-              //       }
-              //     >
-              //       &#43;
-              //     </span>
-              //   </div>
               <div
                 className={`${
                   isOutOfStock

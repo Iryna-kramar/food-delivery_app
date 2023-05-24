@@ -25,27 +25,52 @@ export const getAllProducts = createAsyncThunk(
   }
 );
 
+// const productsSlice = createSlice({
+//   name: "products",
+//   initialState: {
+//     data: [],
+//     loading: false,
+//     error: null,
+//   },
+//   reducers: {},
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(getAllProducts.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(getAllProducts.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.data = action.payload;
+//       })
+//       .addCase(getAllProducts.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.error.message;
+//       });
+//   },
+// });
+
 const productsSlice = createSlice({
   name: "products",
   initialState: {
+    isLoading: false,
+    isFailed: false,
     data: [],
-    loading: false,
-    error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getAllProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.isLoading = true;
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isFailed = false;
+        state.isLoading = false;
         state.data = action.payload;
       })
-      .addCase(getAllProducts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
+      .addCase(getAllProducts.rejected, (state) => {
+        state.isFailed = true;
+        state.isLoading = false;
       });
   },
 });

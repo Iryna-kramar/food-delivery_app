@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllProducts } from "./productsSlice";
 import { getToppings } from "./toppingsSlice";
 import Product from "../../components/Product";
 import { useNavigate, useLocation } from "react-router-dom";
+import CartContext from '../../context/CartContext';
 import { getQueryStringValue } from "../../utils/functions";
 import ToppingsModal from "../../components/ToppingModal";
 import Layout from "../../components/Layout";
@@ -11,11 +12,12 @@ import { addToCart, changeProductCount } from "../cart/cartSlice";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 
-const Products = ({items, setItems}) => {
+const Products = () => {
   const dispatch = useDispatch();
+  const { items, setItems } = useContext(CartContext);
   const products = useSelector((state) => state.products.data);
-  const loading = useSelector((state) => state.products.loading);
-  const error = useSelector((state) => state.products.error);
+  const loading = useSelector((state) => state.products.isLoading);
+  const failed = useSelector((state) => state.products.isFailed);
   const toppings = useSelector((state) => state.toppings.data);
   const cart = useSelector((state) => state.cart.data);
 
@@ -255,7 +257,7 @@ const Products = ({items, setItems}) => {
     );
   }
 
-  if (error) {
+  if (failed) {
     return (
       <div>
         <p className="error-msg">
