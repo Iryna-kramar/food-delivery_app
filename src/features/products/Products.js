@@ -268,7 +268,7 @@ const Products = () => {
   }
 
   return (
-    <Layout>
+    <Layout cartCount={items.length}>
       {search ? (
         <div className="products">
           <div className="main-title">{category}</div>
@@ -276,7 +276,7 @@ const Products = () => {
             <div className="filters">
               <input
                 type="checkbox"
-                id="filter"
+                 id="filter"
                 className="custom-checkbox"
                 name="filter"
                 value="veg-only"

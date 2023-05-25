@@ -22,6 +22,7 @@ export const removeFromCart = createAsyncThunk(
   }
 );
 
+
 export const setCart = createAsyncThunk("cart/setCart", async (products) => {
   try {
     return products;
@@ -48,6 +49,7 @@ const cartSlice = createSlice({
     isLoading: false,
     isFailed: false,
     data: [],
+    actionType: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -73,6 +75,7 @@ const cartSlice = createSlice({
         state.isLoading = false;
         state.isFailed = false;
         state.data = state.data.filter((item) => item.id !== action.payload);
+        state.actionType = "fulfilled"
       })
       .addCase(removeFromCart.rejected, (state) => {
         state.isLoading = false;

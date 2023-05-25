@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { getFormattedPrice, getFormattedToppings } from '../utils/functions';
+import { getFormattedPrice, getFormattedTopping } from '../utils/functions';
 
 const ToppingsModal = ({
   showModal,
@@ -38,7 +38,7 @@ const ToppingsModal = ({
                     onChange={() => handleToppingsSelection(index)}
                   />{' '}
                   <label htmlFor={`custom-checkbox-${index}`}>
-                    {getFormattedToppings(name)}
+                    {getFormattedTopping(name)}
                   </label>
                 </div>
                 <div className="right-section">{getFormattedPrice(price)}</div>

@@ -8,6 +8,9 @@ export const getQueryStringValue = (url, search) => {
   return params.get(search);
 };
 
+export const getFormattedTopping = (topping) => topping.split('_').join(' ');
+
+
 export const getFormattedToppings = (toppings) => {
   return toppings.map((topping) => topping.split('_').join(' '));
 };

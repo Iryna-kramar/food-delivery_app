@@ -1948,7 +1948,7 @@
     },
     {
       "is_veg": false,
-      "quantity": 1,
+      "quantity": 0,
       "_id": "60af9e53338959362de1ed41",
       "name": "Mango Ice Cream",
       "rating": 4.5,

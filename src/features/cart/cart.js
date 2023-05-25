@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import CartContext from '../../context/CartContext';
+import CartContext from "../../context/CartContext";
 import { TiDelete } from "react-icons/ti";
 import { removeFromCart } from "../cart/cartSlice";
 import { getFormattedPrice, getFormattedToppings } from "../../utils/functions";
 import Layout from "../../components/Layout";
 import { getAllProducts } from "../products/productsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { unwrapResult } from "@reduxjs/toolkit";
 import { CURRENCY } from "../../utils/constants";
 
 const Cart = () => {
@@ -18,11 +17,10 @@ const Cart = () => {
   const products = useSelector((state) => state.products.data);
   const cart = useSelector((state) => state.cart.data);
   const failed = useSelector((state) => state.products.isFailed);
-  const toppings = useSelector((state) => state.toppings.data);
+  const cartActionType = useSelector((state) => state.cart.actionType);
 
   const [cartProducts, setCartProducts] = useState(() => cart);
   const [errorMsg, setErrorMsg] = useState("");
-
 
   useEffect(() => {
     dispatch(getAllProducts());
@@ -47,16 +45,11 @@ const Cart = () => {
   }, []);
 
   const removeItemFromCart = (id) => {
-    try {
-      const action = dispatch(removeFromCart(id));
-      const { type } = unwrapResult(action);
-      if (type === "cart/removeFromCart/fulfilled") {
-        const filteredProducts = cartProducts.filter((item) => item.id !== id);
-        setItems(filteredProducts);
-        setCartProducts(filteredProducts);
-      }
-    } catch (error) {
-      console.log("Error while removing item from cart:", error);
+    dispatch(removeFromCart(id));
+    if (cartActionType === "fulfilled") {
+      const filteredProducts = cartProducts.filter((item) => item.id !== id);
+      setItems(filteredProducts);
+      setCartProducts(filteredProducts);
     }
   };
 
